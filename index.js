@@ -281,6 +281,131 @@ Converge.prototype.collectPaymentByToken = function (token, amount, invoiceNumbe
     });
 };
 
+Converge.prototype.authOnlyByToken = function (token, amount, invoiceNumber, description) {
+    return new Promise((resolve, reject) => {
+        //build txn node
+        var xmlTransaction = '';
+        xmlTransaction += 'xmldata=<txn>\n';
+        xmlTransaction += '<ssl_add_token>Y</ssl_add_token>\n'
+        xmlTransaction += '<ssl_merchant_id>' + this.ssl_merchant_id + '</ssl_merchant_id>\n';
+        xmlTransaction += '<ssl_user_id>' + this.ssl_user_id + '</ssl_user_id>\n';
+        xmlTransaction += '<ssl_pin>' + this.ssl_pin + '</ssl_pin>\n';
+        xmlTransaction += '<ssl_test_mode>' + this.ssl_test_mode + '</ssl_test_mode>\n';
+        xmlTransaction += '<ssl_description>' + description + '</ssl_description> \n';
+        xmlTransaction += '<ssl_show_form>false</ssl_show_form>'
+        xmlTransaction += '<ssl_transaction_type>ccauthonly</ssl_transaction_type>\n';
+        xmlTransaction += '<ssl_amount>' + amount + '</ssl_amount>\n';
+        xmlTransaction += '<ssl_result_format>HTML</ssl_result_format>\n';
+        xmlTransaction += '<ssl_get_token>Y</ssl_get_token>\n';
+        xmlTransaction += '<ssl_token>' + token + '</ssl_token>\n';
+        xmlTransaction += '<ssl_invoice_number>' + invoiceNumber + '</ssl_invoice_number>\n';
+        xmlTransaction += '</txn>\n';
+
+        var urlToPost = this.getUrl();
+        request.post({
+            url: urlToPost,
+            form: xmlTransaction
+        }, function (error, response, body) {
+            if (error) {
+                return reject(error);
+            }
+            xml2js.parseString(body, function (err, results) {
+                if (err) {
+                    return reject(err);
+                }
+                //clean the arrays
+                results = cleanXML(results);
+                return resolve(results);
+            });
+        });
+    });
+};
+
+Converge.prototype.completeAuth = function (transactionId, invoiceNumber, description, amount) {
+    return new Promise((resolve, reject) => {
+        //build txn node
+        var xmlTransaction = '';
+        xmlTransaction += 'xmldata=<txn>\n';
+        xmlTransaction += '<ssl_merchant_id>' + this.ssl_merchant_id + '</ssl_merchant_id>\n';
+        xmlTransaction += '<ssl_user_id>' + this.ssl_user_id + '</ssl_user_id>\n';
+        xmlTransaction += '<ssl_pin>' + this.ssl_pin + '</ssl_pin>\n';
+        xmlTransaction += '<ssl_test_mode>' + this.ssl_test_mode + '</ssl_test_mode>\n';
+        xmlTransaction += '<ssl_txn_id>' + transactionId + '</ssl_txn_id>\n';
+        
+        if (description) {
+            xmlTransaction += '<ssl_description>' + description + '</ssl_description> \n';
+        }
+
+        xmlTransaction += '<ssl_show_form>false</ssl_show_form>'
+        xmlTransaction += '<ssl_transaction_type>cccomplete</ssl_transaction_type>\n';
+        
+        if (amount) {
+            xmlTransaction += '<ssl_amount>' + amount + '</ssl_amount>\n';
+        }
+
+        xmlTransaction += '<ssl_result_format>HTML</ssl_result_format>\n';
+
+        if (invoiceNumber) {
+            xmlTransaction += '<ssl_invoice_number>' + invoiceNumber + '</ssl_invoice_number>\n';
+        }
+
+        xmlTransaction += '</txn>\n';
+
+        var urlToPost = this.getUrl();
+        request.post({
+            url: urlToPost,
+            form: xmlTransaction
+        }, function (error, response, body) {
+            if (error) {
+                return reject(error);
+            }
+            xml2js.parseString(body, function (err, results) {
+                if (err) {
+                    return reject(err);
+                }
+                //clean the arrays
+                results = cleanXML(results);
+                return resolve(results);
+            });
+        });
+    });
+};
+
+Converge.prototype.deleteAuth = function (transactionId) {
+    return new Promise((resolve, reject) => {
+        //build txn node
+        var xmlTransaction = '';
+        xmlTransaction += 'xmldata=<txn>\n';
+        xmlTransaction += '<ssl_merchant_id>' + this.ssl_merchant_id + '</ssl_merchant_id>\n';
+        xmlTransaction += '<ssl_user_id>' + this.ssl_user_id + '</ssl_user_id>\n';
+        xmlTransaction += '<ssl_pin>' + this.ssl_pin + '</ssl_pin>\n';
+        xmlTransaction += '<ssl_test_mode>' + this.ssl_test_mode + '</ssl_test_mode>\n';
+        xmlTransaction += '<ssl_txn_id>' + transactionId + '</ssl_txn_id>\n';
+        xmlTransaction += '<ssl_show_form>false</ssl_show_form>'
+        xmlTransaction += '<ssl_transaction_type>ccdelete</ssl_transaction_type>\n';
+        xmlTransaction += '<ssl_result_format>HTML</ssl_result_format>\n';
+        xmlTransaction += '</txn>\n';
+
+        var urlToPost = this.getUrl();
+        request.post({
+            url: urlToPost,
+            form: xmlTransaction
+        }, function (error, response, body) {
+            if (error) {
+                return reject(error);
+            }
+            xml2js.parseString(body, function (err, results) {
+                if (err) {
+                    return reject(err);
+                }
+                //clean the arrays
+                results = cleanXML(results);
+                return resolve(results);
+            });
+        });
+    });
+};
+
 Converge.prototype.verifyCard = function (cardNumber, expirationMonth, expirationYear, cvv ) {
     return new Promise((resolve, reject) => {
         //build txn node
