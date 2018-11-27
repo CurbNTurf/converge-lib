@@ -286,7 +286,6 @@ Converge.prototype.authOnlyByToken = function (token, amount, invoiceNumber, des
         //build txn node
         var xmlTransaction = '';
         xmlTransaction += 'xmldata=<txn>\n';
-        xmlTransaction += '<ssl_add_token>Y</ssl_add_token>\n'
         xmlTransaction += '<ssl_merchant_id>' + this.ssl_merchant_id + '</ssl_merchant_id>\n';
         xmlTransaction += '<ssl_user_id>' + this.ssl_user_id + '</ssl_user_id>\n';
         xmlTransaction += '<ssl_pin>' + this.ssl_pin + '</ssl_pin>\n';
@@ -296,7 +295,6 @@ Converge.prototype.authOnlyByToken = function (token, amount, invoiceNumber, des
         xmlTransaction += '<ssl_transaction_type>ccauthonly</ssl_transaction_type>\n';
         xmlTransaction += '<ssl_amount>' + amount + '</ssl_amount>\n';
         xmlTransaction += '<ssl_result_format>HTML</ssl_result_format>\n';
-        xmlTransaction += '<ssl_get_token>Y</ssl_get_token>\n';
         xmlTransaction += '<ssl_token>' + token + '</ssl_token>\n';
         xmlTransaction += '<ssl_invoice_number>' + invoiceNumber + '</ssl_invoice_number>\n';
         xmlTransaction += '</txn>\n';
