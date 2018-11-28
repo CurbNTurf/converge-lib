@@ -319,7 +319,7 @@ Converge.prototype.authOnlyByToken = function (token, amount, invoiceNumber, des
     });
 };
 
-Converge.prototype.completeAuth = function (transactionId, invoiceNumber, description, amount) {
+Converge.prototype.completeAuth = function (transactionId, amount, invoiceNumber, description) {
     return new Promise((resolve, reject) => {
         //build txn node
         var xmlTransaction = '';
